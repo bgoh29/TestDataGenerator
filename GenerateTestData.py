@@ -73,7 +73,7 @@ def employee_data(n=50):
     employee.to_csv("employee_test_data.csv", index=False)
     return employee
 
-def timeandattendance_data(n=50):
+def timeandattendance_data():
 #  Generate time and attendance data for n employees, for 2 weeks, with realistic clock-in and clock-out times, 
 #  and a chance of missing records based on employment type.   
 
