@@ -61,6 +61,7 @@ def test_timeandattendance_data_columns():
     assert list(df.columns) == expected_columns
     assert list(file_df.columns) == expected_columns
     os.remove("timeandattendance_test_data.csv")  # Clean up after test
+    os.remove("employee_test_data.csv")
 
 # test 6
 def test_expense_data_file_exists():
@@ -71,3 +72,4 @@ def test_expense_data_file_exists():
     # Assert
     assert expected_file.exists()
     os.remove(expected_file)  # Clean up after test
+    os.remove("employee_test_data.csv")
