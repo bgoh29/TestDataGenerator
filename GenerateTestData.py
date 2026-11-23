@@ -180,12 +180,12 @@ def employee_expense_data(n=200):
         rows.append({
             "ClaimID": claimid,
             "EmployeeID": emp.EmployeeID,
-            "ClaimDate": claim_date,
-            "Category": category,
+            "Claim Date": claim_date,
+            "Claim Category": category,
             "Description": description,
             "Amount": amount,
             "GST": gst,
-            "Net": net,
+            "Net Amount": net,
             "Status": status
         })
         
