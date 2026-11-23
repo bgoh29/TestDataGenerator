@@ -1,5 +1,5 @@
 # Python
-/__pycache__
+__pycache__
 *.py*
 *.cpyth 
 
@@ -13,6 +13,7 @@
 /tests/__pycache__/
 .pytest_cache/
 *.csv
+*.pyc
 
 
 # macOS
