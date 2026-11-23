@@ -73,3 +73,18 @@ def test_expense_data_file_exists():
     assert expected_file.exists()
     os.remove(expected_file)  # Clean up after test
     os.remove("employee_test_data.csv")
+
+ #test 7
+ # test_expense_data_columns
+def test_expense_data_columns():
+    # Action
+    df = employee_expense_data(n=10)
+    output_file = Path("expenses_test_data.csv")
+    file_df = pd.read_csv(output_file)
+
+    # Assert
+    expected_columns = [ "ClaimID", "EmployeeID", "Claim Date", "Claim Category", "Description", "Amount", "GST", "Net Amount",  "Status"]
+    assert list(df.columns) == expected_columns
+    assert list(file_df.columns) == expected_columns
+    os.remove("expenses_test_data.csv")  # Clean up after test
+    os.remove("employee_test_data.csv")  
