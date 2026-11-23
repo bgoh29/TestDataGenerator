@@ -42,7 +42,7 @@ def test_employee_data_columns():
 #test 4
 def test_timeandattendance_file_exists():
     # Action
-    timeandattendance_data(n=10)
+    timeandattendance_data()
 
     expected_file = Path("timeandattendance_test_data.csv")
     # Assert
@@ -52,7 +52,7 @@ def test_timeandattendance_file_exists():
 # test 5
 def test_timeandattendance_data_columns():
     # Action
-    df = timeandattendance_data(n=10)
+    df = timeandattendance_data()
     output_file = Path("timeandattendance_test_data.csv")
     file_df = pd.read_csv(output_file)
 
