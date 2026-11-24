@@ -1,20 +1,23 @@
-# Python
-__pycache__
-*.py*
-*.cpyth 
+# Python cache files
+__pycache__/
+*.py[cod]
 
-# Virtual environment
-.venv/
-
-# Jupyter
-.ipynb_checkpoints/
-
-# Testing
-/tests/__pycache__/
+# Pytest cache
 .pytest_cache/
 *.csv
-*.pyc
 
+# Other cache directories
+cache/
+.cache/
 
-# macOS
+# Virtual environments
+venv/
+.venv/
+
+# IDE settings
+.vscode/
+.idea/
+
+# Operating system files
 .DS_Store
+Thumbs.db
