@@ -39,7 +39,7 @@ Generates a standalone employee CSV file.
 
 ### 2. Time and Attendance Data
 
-Generates time and attendance records covering two weeks of business days.
+Generates time and attendance records covering from randomly two weeks to up to 30 business days.
 
 Features include:
 
@@ -110,6 +110,14 @@ Features include:
 
 Public holiday information is obtained through the Python `holidays` package, allowing the generator to take the relevant state or territory holiday calendar into consideration.
 
+Two related CSV files are generated:
+
+| CSV file | Description |
+|---|---|
+| Employees | Employee master data |
+| Leave  | Employee leave records |
+
+
 **Method:**
 
 ```python
@@ -120,7 +128,7 @@ employee_leave_data(n=50)
 
 An important feature of this project is the generation of related datasets rather than isolated random records.
 
-For time and attendance and expense claims, the generator produces separate employee and transaction CSV files. Employee IDs provide the link between the master employee records and their associated transactions.
+For time and attendance, expense claims, and leaves the generator produces separate employee and transaction CSV files. Employee IDs provide the link between the master employee records and their associated transactions.
 
 This helps maintain data relationships and provides a consistent reference when importing the data into an application.
 
