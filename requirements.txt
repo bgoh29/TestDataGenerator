@@ -1,7 +1,6 @@
 pandas
 pytest
-faker
-re
-random
-datetime
-unidecode
+Faker
+Unidecode
+holidays
+numpy
