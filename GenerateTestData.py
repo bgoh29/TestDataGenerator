@@ -1,13 +1,16 @@
 from faker import Faker
 import pandas as pd 
+import numpy as np
 import re
 import random 
 from datetime import datetime, date, timedelta 
 from unidecode import unidecode
+import holidays
 
 
 def employee_data(n=50):
-#   Generate a DataFrame with n rows of employee data, including realistic Australian addresses and postcodes.    
+# Generate a DataFrame with n rows of employee data, including realistic Australian addresses and postcodes.    
+
     fake = Faker(["en_AU", "vi_VN", "it_IT", "en_IN", "el_GR"])
     # postcode lookup table for Australian states and territories
     POSTCODE_RANGES = {
@@ -117,7 +120,7 @@ def timeandattendance_data():
     return timeandattendance
 
 def employee_expense_data(n=200):
-    # Generate expense data for n employees, with realistic expense categories 
+    # Generate expense data for employees, with realistic expense categories 
     # and amounts, and a chance of missing records based on employment type.   
 
     
@@ -193,3 +196,88 @@ def employee_expense_data(n=200):
     expenses.to_csv("expenses_test_data.csv", index=False)
     return expenses
 
+
+
+def employee_leave_data(n=50):
+    # Generate leave data for employees, with realistic leave types and durations, and a chance of missing records based on employment type.   
+    today = date.today()
+    STATES = ["NSW", "VIC", "QLD", "SA", "WA", "TAS", "ACT", "NT"]
+
+    # dict of {date: holiday name} per state, covering this year and next
+    ph = {s: holidays.Australia(subdiv=s, years=[today.year, today.year + 1]) for s in STATES}
+
+    # NumPy needs the dates as a datetime64 array
+    ph_np = {s: np.array(sorted(ph[s]), dtype="datetime64[D]") for s in STATES}
+
+    # leave types with offsets, durations, weights, and status probabilities
+    leave_types = {
+    #  type       (start offset in days from today, working days requested, type weight)
+    "Annual":  {"offset": (7, 120),    "days": (1, 15), "weight": 50,
+                "status": (["Approved", "Pending", "Rejected", "Cancelled"], [50, 40, 5, 5])},
+    "Sick":    {"offset": (-120, -5),  "days": (1, 3),  "weight": 35,
+                "status": (["Approved", "Pending", "Rejected", "Cancelled"], [85, 5, 5, 5])},
+    "Carer's": {"offset": (7, 90),     "days": (1, 3),  "weight": 15,
+                "status": (["Approved", "Pending", "Rejected", "Cancelled"], [50, 40, 5, 5])},
+                }
+
+
+    def build_leave(emp_id, state):
+        # Randomly select a leave type, generate a start and end date, calculate the number of leave days deducted, and determine the status and lodged date.
+        cfg_name = random.choices(list(leave_types),
+                              weights=[c["weight"] for c in leave_types.values()])[0]
+        cfg = leave_types[cfg_name]
+        hol = ph_np[state]
+
+        # Generate a unique leave ID using the first three letters of the leave type
+        # and a random number
+        leaveid = f"{cfg_name[0:3].upper()}{random.randint(10000, 99999)}"  # Unique leave ID
+     
+        # Start: random date, rolled forward to a working day (not a weekend or holiday)
+        raw_start = today + timedelta(days=random.randint(*cfg["offset"]))
+        start = np.busday_offset(np.datetime64(raw_start), 0, roll="forward", holidays=hol)
+
+        # End: N weekdays later, then rolled back if it lands on a public holiday
+        n = random.randint(*cfg["days"])
+        end = np.busday_offset(start, n - 1, roll="forward")             # ignores holidays
+        end = np.busday_offset(end, 0, roll="backward", holidays=hol)    # never ends on a holiday
+
+        leave_days = int(np.busday_count(start, end + 1, holidays=hol))  # excludes weekends and holidays
+
+        start_d, end_d = pd.Timestamp(start).date(), pd.Timestamp(end).date()
+
+        status = random.choices(*cfg["status"])[0]
+
+        # Future leave is lodged before it starts, past sick leave is lodged on or after the first day
+        if start_d > today:
+            lodged = today - timedelta(days=random.randint(0, 30))
+        else:
+            lodged = start_d + timedelta(days=random.randint(0, 3))
+
+        return {
+            "LeaveID": leaveid,
+            "EmployeeID": emp_id,
+            "State": state,
+            "LeaveType": cfg_name,
+            "StartDate": start_d,
+            "EndDate": end_d,
+            "LeaveDaysDeducted": leave_days,
+            "Status": status,
+            "LodgedDate": lodged
+            }
+    
+    # generating employee leave data for n requests
+    n_requests = n
+    staff = employee_data()
+
+    # building leave data for employee, 
+    # randomly selecting an employee and their state, 
+    # and generating leave data using the build_leave function
+    rows = []
+    for _ in range(n_requests):
+        emp = staff.sample(1).iloc[0]
+        rows.append(build_leave(emp["EmployeeID"], emp["State"]))
+
+    leave_data = pd.DataFrame(rows)
+    leave_data.to_csv("leave_test_data.csv", index=False)
+    return leave_data
+    
