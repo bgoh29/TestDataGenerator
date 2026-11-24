@@ -193,7 +193,7 @@ python -c "from GenerateTestData import employee_data; employee_data()"
 **Generate time and attendance data:**
 
 ```bash
-python -c "from GenerateTestData import timeandattendance; timeandattendance()"
+python -c "from GenerateTestData import timeandattendance; timeandattendance_data()"
 ```
 
 **Generate expense claim data:**
