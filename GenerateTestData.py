@@ -7,6 +7,18 @@ from datetime import datetime, date, timedelta
 from unidecode import unidecode
 import holidays
 
+"""
+Program      : GenerateTestData.py
+Description  : Synthetic HR test data generator
+Author       : Ben Goh
+Version      : 1.0.0
+Date         : 9 November 2026
+
+Purpose:
+    Generate synthetic employee, attendance,
+    expense and leave data for software testing.
+"""
+
 
 def employee_data(n=50):
 # Generate a DataFrame with n rows of employee data, including realistic Australian addresses and postcodes.    
@@ -46,26 +58,33 @@ def employee_data(n=50):
     rows = [] 
 
     for _ in range(n): 
+
+        employee_id = fake.unique.random_int(min=10000, max=90000)
+        first = unidecode(fake.first_name())
+        last = unidecode(fake.last_name())
+
+        # tidying up the address to extract suburb, state, and postcode
         addr = fake["en_AU"].address()
         line1, last = addr.split("\n")[0], addr.split("\n")[-1]
         m = re.match(r"^(?P<suburb>.+?),\s+(?P<state>[A-Z]{2,3},)\s+(?P<postcode>\d{4})$", last)
         suburb, state, postcode = m["suburb"], m["state"], m["postcode"]
-        state = state.split(',')
-        first = unidecode(fake.first_name())
-        last = unidecode(fake.last_name())
+        state = state.split(',')[0]  # Remove the trailing comma from the state
+        postcode = au_postcode(state)  # Generate a postcode based on the state
+
         email = f"{first}.{last}@example.com".lower().replace(" ", "")
         employment_type = random.choices(ET, weights=[75, 30, 5])[0]
         department = random.choices(departments, weights=[50, 20, 20, 5, 5])[0]
         role = random.choices(structure[department], weights=[10, 30, 60])[0]
 
+        # building the employee record and appending it to the rows list
         rows.append({ 
-            "EmployeeID" :fake.unique.random_int(min=10000, max=90000), 
+            "EmployeeID" : employee_id, 
             "FirstName" : first, 
             "LastName" : last, 
             "Address": line1, 
             "Suburb": suburb, 
-            "State": state[0], 
-            "PostCode": au_postcode(state[0]), 
+            "State": state, 
+            "PostCode": postcode, 
             "Email": email,
             "EmploymentType" : employment_type,
             "Department" : department,
@@ -92,7 +111,7 @@ def timeandattendance_data():
         return base_dt + timedelta(seconds=random.randint(0, window_minutes * 60))
 
 
-    period = random.randint(14,30) #a random range of days to generate attendance data
+    period = random.randint(14,60) #a random range of days to generate attendance data
     td = date.today() - timedelta(days = period)
     startdate = td - timedelta(days=td.weekday())  # Start from the most recent Monday
     enddate = startdate + timedelta(days = 11)
@@ -108,6 +127,7 @@ def timeandattendance_data():
             employeeId = emp.EmployeeID        
             starttime = random_time_near(day.to_pydatetime().replace(hour=8, minute=45)) 
             endtime = starttime + timedelta(hours=7, minutes= 47, seconds=random.randint(0, 600))
+            
             rows.append({
                 "EmployeeID" : employeeId,
                 "Date" : day,
@@ -152,7 +172,7 @@ def employee_expense_data(n=200):
     status_weights = [70, 20, 10]
 
    # set a random range of days to generate expense data, starting from the most recent Monday
-    period = random.randint(15,30) #a random range of days to generate expense  data
+    period = random.randint(15,31) #a random range of days to generate expense  data
     td = date.today() - timedelta(days = period)
     startdate = td - timedelta(days=td.weekday())  # Start from the most recent Monday
     enddate = startdate + timedelta(days = 11)
