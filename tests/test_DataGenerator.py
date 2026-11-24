@@ -1,5 +1,5 @@
 from pathlib import Path
-from GenerateTestData import employee_data, timeandattendance_data, employee_expense_data
+from GenerateTestData import employee_data, employee_leave_data, timeandattendance_data, employee_expense_data
 import pandas as pd
 import os
 
@@ -88,3 +88,15 @@ def test_expense_data_columns():
     assert list(file_df.columns) == expected_columns
     os.remove("expenses_test_data.csv")  # Clean up after test
     os.remove("employee_test_data.csv")  
+
+# test 8
+def test_leave_data_file_exists():
+    # Action
+    employee_leave_data(n=10)
+
+    expected_file = Path("leave_test_data.csv")
+    # Assert
+    assert expected_file.exists()
+    os.remove(expected_file)  # Clean up after test
+    os.remove("employee_test_data.csv")
+    
