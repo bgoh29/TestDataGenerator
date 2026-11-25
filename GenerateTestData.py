@@ -61,7 +61,7 @@ def employee_data(n=50):
 
         employee_id = fake.unique.random_int(min=10000, max=90000)
         first = unidecode(fake.first_name())
-        last = unidecode(fake.last_name())
+        lastname = unidecode(fake.last_name())
 
         # tidying up the address to extract suburb, state, and postcode
         addr = fake["en_AU"].address()
@@ -80,7 +80,7 @@ def employee_data(n=50):
         rows.append({ 
             "EmployeeID" : employee_id, 
             "FirstName" : first, 
-            "LastName" : last, 
+            "LastName" : lastname, 
             "Address": line1, 
             "Suburb": suburb, 
             "State": state, 
@@ -223,7 +223,7 @@ def employee_leave_data(n=50):
     # Generate leave data for employees, with realistic leave types and durations, 
     # and a chance of missing records based on employment type.   
     STATES = ["NSW", "VIC", "QLD", "SA", "WA", "TAS", "ACT", "NT"]
-    
+
     today = date.today()
     # dict of {date: holiday name} per state, covering this year and next
     ph = {s: holidays.Australia(subdiv=s, years=[today.year, today.year + 1]) for s in STATES}
