@@ -219,10 +219,12 @@ def employee_expense_data(n=200):
 
 
 def employee_leave_data(n=50):
-    # Generate leave data for employees, with realistic leave types and durations, and a chance of missing records based on employment type.   
-    today = date.today()
+    
+    # Generate leave data for employees, with realistic leave types and durations, 
+    # and a chance of missing records based on employment type.   
     STATES = ["NSW", "VIC", "QLD", "SA", "WA", "TAS", "ACT", "NT"]
-
+    
+    today = date.today()
     # dict of {date: holiday name} per state, covering this year and next
     ph = {s: holidays.Australia(subdiv=s, years=[today.year, today.year + 1]) for s in STATES}
 
@@ -242,7 +244,9 @@ def employee_leave_data(n=50):
 
 
     def build_leave(emp_id, state):
-        # Randomly select a leave type, generate a start and end date, calculate the number of leave days deducted, and determine the status and lodged date.
+
+        # Randomly select a leave type, generate a start and end date, 
+        # calculate the number of leave days deducted, and determine the status and lodged date.
         cfg_name = random.choices(list(leave_types),
                               weights=[c["weight"] for c in leave_types.values()])[0]
         cfg = leave_types[cfg_name]
@@ -253,6 +257,7 @@ def employee_leave_data(n=50):
         leaveid = f"{cfg_name[0:3].upper()}{random.randint(10000, 99999)}"  # Unique leave ID
      
         # Start: random date, rolled forward to a working day (not a weekend or holiday)
+        today = date.today()
         raw_start = today + timedelta(days=random.randint(*cfg["offset"]))
         start = np.busday_offset(np.datetime64(raw_start), 0, roll="forward", holidays=hol)
 
